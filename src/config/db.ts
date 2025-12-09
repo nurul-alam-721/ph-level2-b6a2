@@ -18,6 +18,17 @@ const initDB = async()=>{
       )
       `)
 
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS vehicles(
+        id SERIAL PRIMARY KEY,
+        vehicle_name VARCHAR(150) NOT NULL,
+        type VARCHAR(50) CHECK (type IN ('car', 'bike', 'van', 'SUV')),
+        registration_number VARCHAR(100) UNIQUE NOT NULL,
+        daily_rent_price NUMERIC CHECK (daily_rent_price > 0),
+        availability_status VARCHAR(50) CHECK (availability_status IN ('available', 'booked'))
+        )
+      `)
+
   }
   catch(err:any){
     return err.message;
