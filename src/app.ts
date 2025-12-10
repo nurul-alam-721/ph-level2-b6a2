@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import initDB from "./config/db";
 import { userRoutes } from "./modules/users/user.routes";
 import { authRoutes } from "./modules/auth/auth.routes";
+import { vehicleRoutes } from "./modules/vehicles/vehicle.routes";
 export const app = express();
 
 //parser
@@ -15,6 +16,9 @@ app.use('/api/v1/users', userRoutes);
 
 //auth routes
 app.use('/api/v1/auth', authRoutes)
+
+//vehicle routes
+app.use('/api/v1/vehicles', vehicleRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Assignment-02 (Level-2)!");
