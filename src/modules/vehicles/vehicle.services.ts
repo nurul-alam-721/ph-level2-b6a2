@@ -69,9 +69,30 @@ const updateVehicle = async (
   return result;
 };
 
+
+const deleteVehicle = async (id: string) => {
+  const activeBookings = await pool.query(
+    `SELECT id FROM bookings WHERE vehicle_id=$1 AND status='active'`,
+    [id]
+  );
+
+  if (activeBookings.rows.length > 0) {
+    return { deletable: false, result: null };
+  }
+
+  const result = await pool.query(
+    `DELETE FROM vehicles WHERE id=$1 RETURNING *`,
+    [id]
+  );
+
+  return { deletable: true, result };
+};
+
+
 export const vehicleServices = {
   createVehicle,
   getAllVehicles,
   getSingleVehicle,
-  updateVehicle
+  updateVehicle,
+  deleteVehicle
 };

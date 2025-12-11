@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { vehicleServices } from "./vehicle.services";
+import { QueryResult } from "pg";
+
 
 const createVehicle =  async (req: Request, res: Response) => {
   try {
@@ -103,10 +105,45 @@ const updateVehicle = async (req: Request, res: Response) => {
   }
 };
 
+const deleteVehicle = async (req: Request, res: Response) => {
+  try {
+    const { vehicleId } = req.params;
+
+    const { deletable, result } = await vehicleServices.deleteVehicle(vehicleId as string);
+
+    if (!deletable) {
+      return res.status(400).json({
+        success: false,
+        message: "Vehicle cannot be deleted as it has active bookings!",
+      });
+    }
+
+    if (!result || result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Vehicle not found!",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Vehicle deleted successfully!",
+      data: result.rows[0],
+    });
+
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 
 export const vehicleControllers = {
   createVehicle,
   getAllVehicles,
   getSingleVehicle,
-  updateVehicle
-}
+  updateVehicle,
+  deleteVehicle
+};
