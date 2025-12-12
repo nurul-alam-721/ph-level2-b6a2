@@ -7,7 +7,7 @@ const getUsers = async (req: Request, res: Response) => {
     const result = await userServices.getUsers();
     res.status(200).json({
       success: true,
-      message: "Users retrieved successfully!",
+      message: "Users retrieved successfully",
       data: result.rows,
     });
   } catch (err: any) {
@@ -56,7 +56,7 @@ const updateUser = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      message: "User updated successfully!",
+      message: "User updated successfully",
       data: result.rows[0],
     });
 
@@ -92,7 +92,7 @@ const deleteUser = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      message: "User deleted successfully!",
+      message: "User deleted successfully",
       data: result.rows[0],
     });
   } catch (err: any) {

@@ -9,7 +9,7 @@ const createVehicle =  async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: "Vehicle created successfully!",
+      message: "Vehicle created successfully",
       data: result.rows[0],
     });
   } catch (err: any) {
@@ -33,7 +33,7 @@ const getAllVehicles = async (req: Request, res: Response) => {
     }
     res.status(200).json({
       success: true,
-      message: "Vehicles retrieved successfully!",
+      message: "Vehicles retrieved successfully",
       data: result.rows,
     });
   } catch (err: any) {
@@ -60,7 +60,7 @@ const getSingleVehicle = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Vehicle retrieved successfully!",
+      message: "Vehicle retrieved successfully",
       data: result.rows[0],
     });
   } catch (err: any) {
@@ -94,7 +94,7 @@ const updateVehicle = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Vehicle updated successfully!",
+      message: "Vehicle updated successfully",
       data: result.rows[0],
     });
   } catch (err: any) {
@@ -127,7 +127,7 @@ const deleteVehicle = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      message: "Vehicle deleted successfully!",
+      message: "Vehicle deleted successfully",
       data: result.rows[0],
     });
 
