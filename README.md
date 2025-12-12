@@ -5,7 +5,7 @@ A complete backend API for managing users, vehicles, and bookings in a vehicle r
 Built using **Node.js**, **Express.js**, **TypeScript**, and **PostgreSQL**.
 
 ## Live API URL
-> **Add your deployed link here**
+> https://ph-b6-a2-level-2.vercel.app/
 
 ## Features
 - User management (admin & customer)
