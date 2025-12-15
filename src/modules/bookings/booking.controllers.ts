@@ -1,65 +1,59 @@
 import { Request, Response } from "express";
 import { bookingServices } from "./booking.services";
+import { pool } from "../../config/db";
 
-const createBooking =  async (req: Request, res: Response) => {
+export const createBooking = async (req: Request, res: Response) => {
   try {
-    const result = await bookingServices.createBooking(req.body);
+    const booking = await bookingServices.createBooking(req.body);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message: "Booking created successfully",
-      data: result.rows[0],
+      message: "Bookings created successfully",
+      data: [booking],
     });
   } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-}
-
-const getBookings = async (req: Request, res: Response) => {
-  try {
-    if (req.user?.role === "admin") {
-      const result = await bookingServices.getAllBookings();
-
-      return res.status(200).json({
-        success: true,
-        message: "All bookings retrieved successfully",
-        data: result.rows,
-      });
-    }
-
-    if (req.user?.role === "customer") {
-      const result = await bookingServices.getBookingsByCustomer(
-        Number(req.user.id)
-      );
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "You have no bookings",
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Your bookings retrieved successfully",
-        data: result.rows,
-      });
-    }
-
-    return res.status(403).json({
-      success: false,
-      message: "Unauthorized",
-    });
-  } catch (err: any) {
-    res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: err.message,
     });
   }
 };
+
+
+const getBookings = async (req: Request, res: Response) => {
+  try {
+    if (req.user?.role === "admin") {
+      const bookings = await bookingServices.getAllBookings();
+      return res.status(200).json({
+        success: true,
+        message: "Bookings retrieved successfully",
+        data: bookings
+      });
+    }
+
+    if (req.user?.role === "customer") {
+      const bookings = await bookingServices.getBookingsByCustomer(Number(req.user.id));
+      return res.status(200).json({
+        success: true,
+        message: "Your bookings retrieved successfully",
+        data: bookings
+      });
+    }
+
+    return res.status(403).json({
+      success: false,
+      message: "Unauthorized"
+    });
+
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
 
 
 
@@ -76,15 +70,15 @@ const updateBooking = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await bookingServices.getSingleBooking(bookingId as string);
-    if (result.rows.length === 0) {
+    const bookingResult = await bookingServices.getSingleBooking(bookingId as string);
+    if (bookingResult.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: "Booking not found!",
       });
     }
 
-    const booking = result.rows[0];
+    const booking = bookingResult.rows[0];
 
     if (user.role === "customer") {
       if (booking.customer_id !== user.id) {
@@ -117,7 +111,6 @@ const updateBooking = async (req: Request, res: Response) => {
       });
     }
 
-    
     if (user.role === "admin") {
       if (status !== "returned") {
         return res.status(400).json({
@@ -126,15 +119,25 @@ const updateBooking = async (req: Request, res: Response) => {
         });
       }
 
-      const updated = await bookingServices.markReturned(
+      const updatedBooking = await bookingServices.markReturned(
         bookingId as string,
         booking.vehicle_id
       );
 
+      const vehicleResult = await pool.query(
+        `SELECT availability_status FROM vehicles WHERE id = $1`,
+        [booking.vehicle_id]
+      );
+
       return res.status(200).json({
         success: true,
-        message: "Booking marked as returned successfully",
-        data: updated.rows[0],
+        message: "Booking marked as returned. Vehicle is now available",
+        data: {
+          ...updatedBooking.rows[0],
+          vehicle: {
+            availability_status: vehicleResult.rows[0].availability_status,
+          },
+        },
       });
     }
 
@@ -142,7 +145,6 @@ const updateBooking = async (req: Request, res: Response) => {
       success: false,
       message: "Forbidden action!",
     });
-
   } catch (err: any) {
     return res.status(500).json({
       success: false,

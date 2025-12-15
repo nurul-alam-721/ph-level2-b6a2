@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { vehicleServices } from "./vehicle.services";
-import { QueryResult } from "pg";
 
 
 const createVehicle =  async (req: Request, res: Response) => {
@@ -128,7 +127,6 @@ const deleteVehicle = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: "Vehicle deleted successfully",
-      data: result.rows[0],
     });
 
   } catch (err: any) {

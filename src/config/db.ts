@@ -40,8 +40,7 @@ const initDB = async () => {
         CHECK (rent_end_date > rent_start_date),
         status VARCHAR(50) CHECK(status IN('active', 'cancelled', 'returned'))
 );
-
-        `);
+`);
   } catch (err: any) {
     return err.message;
   }
